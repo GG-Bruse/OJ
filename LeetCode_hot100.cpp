@@ -171,4 +171,36 @@ https://leetcode.cn/problems/3sum/description/?envType=study-plan-v2&envId=top-1
 请你返回所有和为 0 且不重复的三元组。
 注意：答案中不可以包含重复的三元组
 */
-
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+class Solution
+{
+public:
+    vector<vector<int>> threeSum(vector<int>& nums)
+    {
+        int size = nums.size();
+        sort(nums.begin(), nums.end()); // 由于不可重复, 需进行排序
+        vector<vector<int>> result;
+        for (size_t i = 0; i < size - 2; ++i)
+        {
+            if (i > 0 && nums[i] == nums[i - 1]) continue;//需与上一次枚举的数不相同
+            int target = 0 - nums[i];
+            int k = size - 1;
+            for (int j = i + 1; j < size - 1; ++j)
+            {
+                if (j > i + 1 && nums[j] == nums[j - 1]) continue;//需与上一次枚举的数不相同
+                while (j < k && nums[j] + nums[k] > target) --k;// 双指针查找, <、=都停止
+                // nums[j] < 所有while枚举过的nums[k], 若nums[j]增大, nums[k]需减小
+                // 但当j == k是, 说明找了所有的k, 都是nums[j] + nums[k] > target
+                // j继续向后只可能更大, 并且不可能有更小的nums[k]了
+                // 此时结束本次j的循环 
+                if (j == k) break;
+                if (nums[j] + nums[k] == target)
+                    result.push_back({ nums[i], nums[j], nums[k] });
+            }
+        }
+        return result;
+    }
+};
