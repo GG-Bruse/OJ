@@ -204,3 +204,43 @@ public:
         return result;
     }
 };
+
+
+
+/*
+无重复字符的最长子串
+https://leetcode.cn/problems/longest-substring-without-repeating-characters/description/?envType=study-plan-v2&envId=top-100-liked
+给定一个字符串s ，请你找出其中不含有重复字符的最长子串的长度
+输入: s = "abcabcbb"
+输出: 3
+解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3
+*/
+#include <iostream>
+#include <string>
+#include <unordered_map>
+using namespace std;
+class Solution
+{
+public:
+    int lengthOfLongestSubstring(string s)
+    {
+        int size = s.size();
+        if (0 == size) return 0;
+
+        int maxLength = 1;
+        int prev = 0, last = 0;
+        unordered_map<char, int> hashCount;
+        while (prev < size)
+        {
+            while (last < size && hashCount[s[last]] == 0) {
+                hashCount[s[last]]++;
+                ++last;
+            }
+            maxLength = max(maxLength, last - prev);
+            hashCount[s[prev]]--;
+            ++prev;
+        }
+        return maxLength;
+    }
+};
+
