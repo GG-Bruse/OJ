@@ -244,3 +244,120 @@ public:
     }
 };
 
+
+
+/*
+找到字符串中所有字母异位词
+https://leetcode.cn/problems/find-all-anagrams-in-a-string/description/?envType=study-plan-v2&envId=top-100-liked
+给定两个字符串 s 和 p，找到 s 中所有 p 的异位词的子串，返回这些子串的起始索引。不考虑答案输出的顺序
+输入: s = "cbaebabacd", p = "abc"
+输出: [0,6]
+解释:
+起始索引等于 0 的子串是 "cba", 它是 "abc" 的异位词
+起始索引等于 6 的子串是 "bac", 它是 "abc" 的异位词
+*/
+// error : timeout
+class Solution
+{
+public:
+    vector<int> findAnagrams(string s, string p)
+    {
+        vector<int> result;
+        unordered_map<char, int> hashExist;
+        for (char& ch : p) hashExist[ch]++;
+
+        int size = s.size();
+        int prev = 0, last = 0;
+        unordered_map<char, int> hashCurrent;
+        while (prev < size)
+        {
+            while (last < size && hashCurrent[s[last]] < hashExist[s[last]]) {
+                hashCurrent[s[last]]++;
+                ++last;
+            }
+            bool isHeterotopicWords = true;
+            for (auto& ch : p) {
+                if (hashCurrent[ch] != hashExist[ch]) {
+                    isHeterotopicWords = false;
+                    break;
+                }
+            }
+            if (isHeterotopicWords) result.push_back(prev);
+            ++prev;
+            last = prev;
+            hashCurrent.clear();
+        }
+        return result;
+    }
+};
+// 滑动窗口
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+class Solution
+{
+public:
+    vector<int> findAnagrams(string s, string p)
+    {
+        int sSize = s.size(), pSize = p.size();
+        if (sSize < pSize) return vector<int>();
+
+        vector<int> result;
+        vector<int> sHash(26);
+        vector<int> pHash(26);
+        for (int i = 0; i < pSize; ++i) {
+            ++sHash[s[i] - 'a'];
+            ++pHash[p[i] - 'a'];
+        }
+
+        if (sHash == pHash) result.push_back(0);
+
+        for (int i = 0; i < sSize - pSize; ++i) {
+            // 向后滑动一次
+            --sHash[s[i] - 'a'];
+            ++sHash[s[i + pSize] - 'a'];
+            if (sHash == pHash) result.push_back(i + 1);
+        }
+        return result;
+    }
+};
+
+
+
+/*
+和为 K 的子数组
+https://leetcode.cn/problems/subarray-sum-equals-k/description/?envType=study-plan-v2&envId=top-100-liked
+给你一个整数数组 nums 和一个整数 k ，请你统计并返回 该数组中和为 k 的子数组的个数
+子数组是数组中元素的连续非空序列
+输入：nums = [1,1,1], k = 2
+输出：2
+*/
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+using namespace std;
+class Solution
+{
+public:
+    // pre[i]为nums[0...i]的所有数之和, pre[i] = pre[i - 1] + nums[i]
+    //[i,j]和为k的数组, 即prev[j] - prev[i - 1] == k, 移项为pre[i - 1] = prev[j] - k
+    int subarraySum(vector<int>& nums, int k)
+    {
+        // 记录prev[i]存在个数
+        unordered_map<int, int> hashMap;
+        hashMap[0] = 1;
+
+        int result = 0;
+        int pre = 0;
+        for (int i = 0; i < nums.size(); ++i)
+        {
+            pre += nums[i];// 不断增加的prev[j]
+            // 是否存在prev[j] - k, 即pre[i - 1]
+            if (hashMap.find(pre - k) != hashMap.end())
+                result += hashMap[pre - k];
+            ++hashMap[pre];
+        }
+        return result;
+    }
+};
