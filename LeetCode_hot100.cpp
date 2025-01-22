@@ -361,3 +361,101 @@ public:
         return result;
     }
 };
+
+
+
+/*
+滑动窗口最大值
+https://leetcode.cn/problems/sliding-window-maximum/description/?envType=study-plan-v2&envId=top-100-liked
+给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧
+你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位
+返回 滑动窗口中的最大值
+输入：nums = [1,3,-1,-3,5,3,6,7], k = 3
+输出：[3,3,5,5,6,7]
+*/
+#include <iostream>
+#include <queue>
+#include <vector>
+using namespace std;
+class Solution
+{
+public:
+    vector<int> maxSlidingWindow(vector<int>& nums, int k)
+    {
+        int size = nums.size();
+        priority_queue<pair<int, int>> qe;
+        for (int i = 0; i < k; ++i)
+            qe.emplace(nums[i], i);
+        vector<int> result = { qe.top().first };
+
+        for (int i = k; i < size; ++i) //不断移动的窗口右边界
+        {
+            qe.emplace(nums[i], i);
+            while (qe.top().second <= i - k) qe.pop();//若堆顶元素不在滑动窗口内则删除
+            result.push_back(qe.top().first);
+        }
+        return result;
+    }
+};
+
+
+
+/*
+最小覆盖子串
+https://leetcode.cn/problems/minimum-window-substring/description/?envType=study-plan-v2&envId=top-100-liked
+给你一个字符串 s 、一个字符串 t
+返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 ""
+注意:
+对于 t 中重复字符，我们寻找的子字符串中该字符数量必须不少于 t 中该字符数量
+如果 s 中存在这样的子串，我们保证它是唯一的答案
+输入：s = "ADOBECODEBANC", t = "ABC"
+输出："BANC"
+解释：最小覆盖子串 "BANC" 包含来自字符串 t 的 'A'、'B' 和 'C'
+*/
+#include <iostream>
+#include <string>
+#include <unordered_map>
+using namespace std;
+class Solution
+{
+public:
+    bool check() // 检查当前窗口是否包含t所需的所有字符
+    {
+        for (const auto& it : origin)
+            if (count[it.first] < it.second)
+                return false;
+        return true;
+    }
+
+    string minWindow(string s, string t)
+    {
+        for (const char& ch : t) ++origin[ch];
+
+        int left = 0, right = -1;
+        int resultLeft = -1, resultRight = -1;
+        int length = INT_MAX;
+        int size = s.size();
+
+        while (right < size) //右边界不断扩大
+        {
+            // 右边界指向的字符若存在于t中, count进行记录
+            if (origin.find(s[++right]) != origin.end()) ++count[s[right]];
+            // 收缩左边界, 符合要求的前提下, 越小越好
+            while (check() && left <= right)
+            {
+                if (right - left + 1 < length) { //修改result
+                    length = right - left + 1;
+                    resultLeft = left;
+                }
+                if (origin.find(s[left]) != origin.end()) //删除count中的记录
+                    --count[s[left]];
+                ++left;
+            }
+        }
+        return resultLeft == -1 ? string() : s.substr(resultLeft, length);
+    }
+private:
+    unordered_map<char, int> origin, count;
+    // origin 存放t中各个元素出现的次数
+    // count 维护当前滑动窗口中各个元素出现的次数
+};
