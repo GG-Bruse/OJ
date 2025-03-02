@@ -459,3 +459,79 @@ private:
     // origin 存放t中各个元素出现的次数
     // count 维护当前滑动窗口中各个元素出现的次数
 };
+
+
+
+/*
+最大连续子数组
+https://leetcode.cn/problems/maximum-subarray/description/?envType=study-plan-v2&envId=top-100-liked
+给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和
+子数组是数组中的一个连续部分
+输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
+输出：6
+解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
+*/
+class Solution
+{
+public:
+    int maxSubArray(vector<int>& nums)
+    {
+        int size = nums.size();
+        int result = nums[0];
+        // dp[i] : 以nums[i]为结尾的数组的 连续子数组的最大和
+        vector<int> dp(size);
+        dp[0] = nums[0];
+        for (int i = 1; i < size; ++i) {
+            dp[i] = max(dp[i - 1] + nums[i], nums[i]);
+            result = max(result, dp[i]);
+        }
+        return result;
+    }
+};
+// 空间优化
+class Solution
+{
+public:
+    int maxSubArray(vector<int>& nums)
+    {
+        int size = nums.size();
+        int result = nums[0];
+        int prev = nums[0];
+        for (int i = 1; i < size; ++i) {
+            prev = max(prev + nums[i], nums[i]);
+            result = max(result, prev);
+        }
+        return result;
+    }
+};
+
+
+
+/*
+合并区间
+https://leetcode.cn/problems/merge-intervals/description/?envType=study-plan-v2&envId=top-100-liked
+以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi]
+请你合并所有重叠的区间，并返回 一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间
+*/
+class Solution
+{
+public:
+    vector<vector<int>> merge(vector<vector<int>>& intervals)
+    {
+        // sort(intervals.begin(), intervals.end(), [](const vector<int>& val1, const vector<int>& val2){
+        //     return val1[0] < val2[0];
+        // });
+        // 不写lambda,默认按照第一个数排列
+        sort(intervals.begin(), intervals.end());
+        vector<vector<int>> merged;
+        for (int i = 0; i < intervals.size(); ++i)
+        {
+            int left = intervals[i][0], right = intervals[i][1];
+            if (!merged.size() || merged.back()[1] < left)
+                merged.push_back({ left, right });
+            else
+                merged.back()[1] = max(merged.back()[1], right);
+        }
+        return merged;
+    }
+};
