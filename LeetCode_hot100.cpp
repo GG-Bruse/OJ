@@ -535,3 +535,62 @@ public:
         return merged;
     }
 };
+
+
+
+/*
+轮转数组
+https://leetcode.cn/problems/rotate-array/description/?envType=study-plan-v2&envId=top-100-liked
+给定一个整数数组 nums，将数组中的元素向右轮转 k 个位置，其中 k 是非负数
+输入: nums = [1,2,3,4,5,6,7], k = 3
+输出: [5,6,7,1,2,3,4]
+解释:
+向右轮转 1 步: [7,1,2,3,4,5,6]
+向右轮转 2 步: [6,7,1,2,3,4,5]
+向右轮转 3 步: [5,6,7,1,2,3,4]
+*/
+class Solution
+{
+public:
+    void rotate(vector<int>& nums, int k)
+    {
+        if (k == 0) return;
+        int size = nums.size();
+        vector<int> result(size);
+        for (int i = 0; i < size; ++i)
+            result[(i + k) % size] = nums[i];
+        nums.assign(result.begin(), result.end());
+    }
+};
+
+
+
+/*
+除自身以外数组的乘积
+https://leetcode.cn/problems/product-of-array-except-self/?envType=study-plan-v2&envId=top-100-liked
+给你一个整数数组 nums，返回 数组 answer ，其中 answer[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积
+题目数据 保证 数组 nums之中任意元素的全部前缀元素和后缀的乘积都在  32 位 整数范围内
+请不要使用除法，且在 O(n) 时间复杂度内完成此题
+输入: nums = [1,2,3,4]
+输出: [24,12,8,6]
+*/
+class Solution
+{
+public:
+    vector<int> productExceptSelf(vector<int>& nums)
+    {
+        int size = nums.size();
+        vector<int> prevMulSum(size), lastMulSum(size);
+        prevMulSum[0] = 1;
+        for (int i = 1; i < size; ++i)
+            prevMulSum[i] = prevMulSum[i - 1] * nums[i - 1];
+        lastMulSum[size - 1] = 1;
+        for (int i = size - 2; i >= 0; --i)
+            lastMulSum[i] = lastMulSum[i + 1] * nums[i + 1];
+
+        vector<int> result(size);
+        for (int i = 0; i < size; ++i)
+            result[i] = prevMulSum[i] * lastMulSum[i];
+        return result;
+    }
+};
