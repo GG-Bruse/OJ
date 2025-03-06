@@ -594,3 +594,54 @@ public:
         return result;
     }
 };
+
+
+
+
+
+/*
+缺失的第一个正数
+https://leetcode.cn/problems/first-missing-positive/description/?envType=study-plan-v2&envId=top-100-liked
+给你一个未排序的整数数组 nums ，请你找出其中没有出现的最小的正整数
+请你实现时间复杂度为 O(n) 并且只使用常数级别额外空间的解决方案
+*/
+class Solution
+{
+public:
+    int firstMissingPositive(vector<int>& nums)
+    {
+        int size = nums.size();
+        // 所有负数标记为size + 1
+        for (int i = 0; i < size; ++i)
+            if (nums[i] <= 0)
+                nums[i] = size + 1;
+        // 将绝对值小于size的元素映射的位置变成负数
+        for (int i = 0; i < size; ++i) {
+            int number = abs(nums[i]);
+            if (number <= size) // 所有绝对值大于size的都不处理
+                nums[number - 1] = -abs(nums[number - 1]);
+        }
+        // 返回第一个大于0的元素的下标
+        for (int i = 0; i < size; ++i)
+            if (nums[i] > 0)
+                return i + 1;
+        return size + 1;
+    }
+};
+class Solution
+{
+public:
+    int firstMissingPositive(vector<int>& nums)
+    {
+        int size = nums.size();
+        for (int i = 0; i < size; ++i) {
+            // 每一个while循环将 i 位置的上的数字放在其该出现的地方, 由于是交换, 新的nums[i]可能也需要放置, 所以采用循环
+            while (nums[i] > 0 && nums[i] <= size && nums[nums[i] - 1] != nums[i])
+                swap(nums[nums[i] - 1], nums[i]);
+        }
+        for (int i = 0; i < size; ++i)
+            if (nums[i] != i + 1)
+                return i + 1;
+        return size + 1;
+    }
+};
