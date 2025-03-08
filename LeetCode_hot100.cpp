@@ -645,3 +645,61 @@ public:
         return size + 1;
     }
 };
+
+
+
+/*
+矩阵置零
+https://leetcode.cn/problems/set-matrix-zeroes/description/?envType=study-plan-v2&envId=top-100-liked
+给定一个 m x n 的矩阵，如果一个元素为 0 ，则将其所在行和列的所有元素都设为 0 。请使用原地算法
+输入：matrix = [[1,1,1],[1,0,1],[1,1,1]]
+输出：[[1,0,1],[0,0,0],[1,0,1]]
+*/
+class Solution
+{
+public:
+    void setZeroes(vector<vector<int>>& matrix)
+    {
+        int row = matrix.size(), col = matrix[0].size();
+
+        vector<bool> rowFlag(row), colFlag(col);
+        for (int i = 0; i < row; ++i)
+            for (int j = 0; j < col; ++j)
+                if (0 == matrix[i][j])
+                    rowFlag[i] = colFlag[j] = true;
+
+        for (int i = 0; i < row; ++i)
+            for (int j = 0; j < col; ++j)
+                if (rowFlag[i] || colFlag[j])
+                    matrix[i][j] = 0;
+    }
+};
+class SolutionUse
+{
+public:
+    // 使用第一行、第一列记录该 列、行 是否需要修改为0
+    // 但是第一行、第一列就会被修改
+    // 使用一个标记变量记录原本第一列是否存在0
+    // 行逆序更新, 防止每列第一个元素被提前修改
+    void setZeroes(vector<vector<int>>& matrix)
+    {
+        int row = matrix.size(), col = matrix[0].size();
+
+        int flag_col0 = false;
+        for (int i = 0; i < row; ++i)
+        {
+            if (0 == matrix[i][0])
+                flag_col0 = true;
+            for (int j = 1; j < col; ++j)
+                if (0 == matrix[i][j])
+                    matrix[i][0] = matrix[0][j] = 0;
+        }
+        for (int i = row - 1; i >= 0; --i)
+        {
+            for (int j = 1; j < col; ++j)
+                if (0 == matrix[i][0] || 0 == matrix[0][j])
+                    matrix[i][j] = 0;
+            if (flag_col0) matrix[i][0] = 0;
+        }
+    }
+};
