@@ -703,3 +703,78 @@ public:
         }
     }
 };
+
+
+
+/*
+螺旋矩阵
+https://leetcode.cn/problems/spiral-matrix/description/?envType=study-plan-v2&envId=top-100-liked
+给你一个 m 行 n 列的矩阵 matrix ，请按照 顺时针螺旋顺序 ，返回矩阵中的所有元素
+*/
+class Solution
+{
+public:
+    // 右、下、左、上
+    const int dx[4] = { 0, 1, 0, -1 };
+    const int dy[4] = { 1, 0, -1, 0 };
+
+    vector<int> spiralOrder(vector<vector<int>>& matrix)
+    {
+        int rows = matrix.size(), cols = matrix[0].size();
+        vector<vector<bool>> visited(rows, vector<bool>(cols));
+        int total = rows * cols;
+        vector<int> result(total);
+
+        int row = 0, col = 0;
+        int directionIndex = 0;
+        for (int i = 0; i < total; ++i)
+        {
+            result[i] = matrix[row][col];
+            visited[row][col] = true;
+            // 试移动
+            int nextRow = row + dx[directionIndex];
+            int nextCol = col + dy[directionIndex];
+            if (nextRow < 0 || nextRow >= rows || nextCol < 0 || nextCol >= cols || visited[nextRow][nextCol]) {
+                directionIndex = (directionIndex + 1) % 4;
+            }
+            // 正式移动
+            row += dx[directionIndex];
+            col += dy[directionIndex];
+        }
+        return result;
+    }
+};
+// 逐层模拟
+class Solution
+{
+public:
+    vector<int> spiralOrder(vector<vector<int>>& matrix)
+    {
+        int rows = matrix.size();
+        if (0 == rows) return {};
+        int cols = matrix[0].size();
+        if (0 == cols) return {};
+
+        vector<int> result;
+        int left = 0, right = cols - 1, top = 0, bottom = rows - 1;
+        while (left <= right && top <= bottom)
+        {
+            for (int col = left; col <= right; ++col)
+                result.push_back(matrix[top][col]);
+            for (int row = top + 1; row <= bottom; ++row)
+                result.push_back(matrix[row][right]);
+            if (left < right&& top < bottom)
+            {
+                for (int col = right - 1; col > left; --col)
+                    result.push_back(matrix[bottom][col]);
+                for (int row = bottom; row > top; --row)
+                    result.push_back(matrix[row][left]);
+            }
+            ++left;
+            --right;
+            ++top;
+            --bottom;
+        }
+        return result;
+    }
+};
