@@ -778,3 +778,94 @@ public:
         return result;
     }
 };
+
+
+
+/*
+旋转图像
+https://leetcode.cn/problems/rotate-image/description/?envType=study-plan-v2&envId=top-100-liked
+给定一个 n × n 的二维矩阵 matrix 表示一个图像。请你将图像顺时针旋转 90 度
+你必须在 原地 旋转图像，这意味着你需要直接修改输入的二维矩阵。请不要 使用另一个矩阵来旋转图像
+*/
+// 模拟
+class Solution
+{
+public:
+    void rotate(vector<vector<int>>& matrix)
+    {
+        int size = matrix.size();
+        for (int i = 0; i < size / 2; ++i)
+        {
+            for (int j = 0; j < (size + 1) / 2; ++j)
+            {
+                int tmp = matrix[i][j];
+                matrix[i][j] = matrix[size - j - 1][i];
+                matrix[size - j - 1][i] = matrix[size - i - 1][size - j - 1];
+                matrix[size - i - 1][size - j - 1] = matrix[j][size - i - 1];
+                matrix[j][size - i - 1] = tmp;
+            }
+        }
+    }
+};
+// 翻转代替旋转
+class Solution {
+public:
+    void rotate(vector<vector<int>>& matrix)
+    {
+        int size = matrix.size();
+        // 水平线翻转
+        for (int i = 0; i < size / 2; ++i)
+            for (int j = 0; j < size; ++j)
+                swap(matrix[i][j], matrix[size - i - 1][j]);
+        // 主对角线翻转
+        for (int i = 0; i < size; ++i)
+            for (int j = 0; j < i; ++j)
+                swap(matrix[i][j], matrix[j][i]);
+    }
+};
+
+
+
+/*
+搜索二维矩阵 II
+https://leetcode.cn/problems/search-a-2d-matrix-ii/description/?envType=study-plan-v2&envId=top-100-liked
+编写一个高效的算法来搜索 m x n 矩阵 matrix 中的一个目标值 target 。该矩阵具有以下特性：
+每行的元素从左到右升序排列
+每列的元素从上到下升序排列
+*/
+class Solution {
+public:
+    bool searchMatrix(vector<vector<int>>& matrix, int target)
+    {
+        int rows = matrix.size(), cols = matrix[0].size();
+        for (int i = 0; i < rows; ++i)
+        {
+            int min = matrix[i][0], max = matrix[i][cols - 1];
+            if (target >= min && target <= max)
+            {
+                if (target == min || target == max) return true;
+                auto it = lower_bound(matrix[i].begin(), matrix[i].end(), target);
+                if (it != matrix[i].end() && *it == target) return true;
+            }
+            else if (target < min)
+                return false;
+        }
+        return false;
+    }
+};
+class Solution
+{
+public:
+    bool searchMatrix(vector<vector<int>>& matrix, int target)
+    {
+        int rows = matrix.size(), cols = matrix[0].size();
+        int x = 0, y = cols - 1;
+        while (x < rows && y >= 0)
+        {
+            if (matrix[x][y] == target) return true;
+            else if (matrix[x][y] > target) --y;
+            else ++x;
+        }
+        return false;
+    }
+};
