@@ -869,3 +869,122 @@ public:
         return false;
     }
 };
+
+
+
+/*
+相交链表
+https://leetcode.cn/problems/intersection-of-two-linked-lists/description/?envType=study-plan-v2&envId=top-100-liked
+给你两个单链表的头节点 headA 和 headB ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 null
+题目数据 保证 整个链式结构中不存在环
+注意，函数返回结果后，链表必须保持其原始结构
+*/
+struct ListNode {
+    int val;
+    ListNode* next;
+    ListNode(int x) : val(x), next(NULL) {}
+};
+// 一
+class Solution
+{
+public:
+    ListNode* getIntersectionNode(ListNode* headA, ListNode* headB)
+    {
+        int aListLength = 0, bListLength = 0;
+
+        ListNode* tmpA = headA, * tmpB = headB;
+        for (; tmpA != NULL; tmpA = tmpA->next) ++aListLength;
+        for (; tmpB != NULL; tmpB = tmpB->next) ++bListLength;
+
+        int offset = abs(aListLength - bListLength);
+        if (aListLength > bListLength) {
+            for (int i = 0; i < offset; ++i)
+                headA = headA->next;
+        }
+        else if (bListLength > aListLength) {
+            for (int i = 0; i < offset; ++i)
+                headB = headB->next;
+        }
+
+        while (headA != nullptr && headB != nullptr) {
+            if (headA == headB) return headA;
+            headA = headA->next;
+            headB = headB->next;
+        }
+        return nullptr;
+    }
+};
+// 二
+class Solution
+{
+public:
+    /*
+    假设链表 headA 的不相交部分有 a 个节点
+    链表 headB 的不相交部分有 b 个节点
+    两个链表相交的部分有 c 个节点
+
+    若a == b, 两个指针会同时到达两个链表相交的节点, 此时返回相交的节点
+    若a != b,
+    指针 pA 会遍历完链表 headA，指针 pB 会遍历完链表 headB，两个指针不会同时到达链表的尾节点
+    然后指针 pA 移到链表 headB 的头节点，指针 pB 移到链表 headA 的头节点，然后两个指针继续移动
+    在指针 pA 移动了 a+c+b 次、指针 pB 移动了 b+c+a 次之后，两个指针会同时到达两个链表相交的节点
+    该节点也是两个指针第一次同时指向的节点，此时返回相交的节点
+
+    链表 headA 和 headB 的长度分别是 m 和 n
+    若m=n, 则两个指针会同时到达两个链表的尾节点, 然后同时变成空值 null
+    若m=n，则由于两个链表没有公共节点, 两个指针也不会同时到达两个链表的尾节点, 因此两个指针都会遍历完两个链表
+    在指针 pA 移动了 m+n 次、指针 pB 移动了 n+m 次之后，两个指针会同时变成空值 null
+    */
+    ListNode* getIntersectionNode(ListNode* headA, ListNode* headB)
+    {
+        if (headA == nullptr || headB == nullptr) return nullptr;
+
+        ListNode* pA = headA, * pB = headB;
+        while (pA != pB)
+        {
+            pA = (pA == nullptr ? headB : pA->next);
+            pB = (pB == nullptr ? headA : pB->next);
+        }
+        return pA;
+    }
+};
+
+
+
+/*
+反转链表
+https://leetcode.cn/problems/reverse-linked-list/description/?envType=study-plan-v2&envId=top-100-liked
+给你单链表的头节点 head ，请你反转链表，并返回反转后的链表
+*/
+//迭代
+class Solution
+{
+public:
+    ListNode* reverseList(ListNode* head)
+    {
+        ListNode* newHead = nullptr;
+        ListNode* current = head;
+        while (current != nullptr)
+        {
+            ListNode* next = current->next;
+            current->next = newHead;
+            newHead = current;
+            current = next;
+        }
+        return newHead;
+    }
+};
+// 递归
+class Solution
+{
+public:
+    ListNode* reverseList(ListNode* head)
+    {
+        if (nullptr == head || nullptr == head->next) return head;
+
+        ListNode* newHead = reverseList(head->next);
+        head->next->next = head;
+        head->next = nullptr;
+        return newHead;
+    }
+};
