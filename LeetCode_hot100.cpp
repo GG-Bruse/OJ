@@ -988,3 +988,106 @@ public:
         return newHead;
     }
 };
+
+
+
+/*
+回文链表
+https://leetcode.cn/problems/palindrome-linked-list/description/?envType=study-plan-v2&envId=top-100-liked
+给你一个单链表的头节点 head ，请你判断该链表是否为回文链表。如果是，返回 true ；否则，返回 false
+*/
+// 一
+class Solution {
+public:
+    bool isPalindrome(ListNode* head) {
+        frontPointer = head;
+        return recursivelyCheck(head);
+    }
+    bool recursivelyCheck(ListNode* currentNode)
+    {
+        if (currentNode != nullptr)
+        {
+            if (!recursivelyCheck(currentNode->next)) {
+                return false;
+            }
+            if (currentNode->val != frontPointer->val) {
+                return false;
+            }
+            frontPointer = frontPointer->next;
+        }
+        return true;
+    }
+
+    ListNode* frontPointer;
+};
+// 二
+class Solution
+{
+public:
+    bool isPalindrome(ListNode* head)
+    {
+        ListNode* mid = GetMiddleNode(head);
+        ListNode* head2 = ReverseList(mid->next);
+        while (head2 != nullptr) {
+            if (head->val != head2->val)
+                return false;
+            head = head->next;
+            head2 = head2->next;
+        }
+        if (head2 != nullptr) return false;
+        return true;
+    }
+private:
+    ListNode* GetMiddleNode(ListNode* head)
+    {
+        ListNode* fast = head, * slow = head;
+        while (fast->next != nullptr && fast->next->next != nullptr) {
+            fast = fast->next->next;
+            slow = slow->next;
+        }
+        return slow;
+    }
+
+    ListNode* ReverseList(ListNode* head)
+    {
+        ListNode* newHead = nullptr;
+        ListNode* current = head;
+        while (current != nullptr)
+        {
+            ListNode* next = current->next;
+            current->next = newHead;
+            newHead = current;
+            current = next;
+        }
+        return newHead;
+    }
+};
+
+
+
+/*
+环形链表
+https://leetcode.cn/problems/linked-list-cycle/description/?envType=study-plan-v2&envId=top-100-liked
+给你一个链表的头节点 head ，判断链表中是否有环
+如果链表中有某个节点，可以通过连续跟踪 next 指针再次到达，则链表中存在环
+为了表示给定链表中的环，评测系统内部使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）
+注意：pos 不作为参数进行传递 。仅仅是为了标识链表的实际情况
+如果链表中存在环 ，则返回 true 。 否则，返回 false
+*/
+class Solution {
+public:
+    bool hasCycle(ListNode* head)
+    {
+        if (head == nullptr || head->next == nullptr)
+            return false;
+
+        ListNode* fast = head->next, * slow = head;
+        while (fast != slow)
+        {
+            if (fast == nullptr || fast->next == nullptr) return false;
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        return true;
+    }
+};
